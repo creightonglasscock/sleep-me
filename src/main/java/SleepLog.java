@@ -82,14 +82,16 @@ public class SleepLog {
                 if(hour1>12 && hour2>12 || hour1<12 && hour2<12){
                     difference[i] += Math.abs(hour1-hour2);
                 }else if(hour1>12){
-                    difference[i] += (24-hour1) + hour2;
+                    difference[i] += Math.abs(24-hour1) + hour2;
                 }else{
-                    difference[i] += (24-hour2) + hour1;
+                    difference[i] += Math.abs(24-hour2) + hour1;
                 }
             }
         }
-        int recommended = numDays*2;
-        double cperc = ((difference[0]/recommended) + (difference[1]/recommended))/2.0;
+        double recommended = numDays*2.0;
+        double cperc = 100-(((difference[0]/recommended) + (difference[1]/recommended))/2.0)*100;
+        DecimalFormat df = new DecimalFormat("##.#");
+        df.format(cperc);
         if(cperc<=25){
             return cperc +"%";
         }else if (cperc<=50){
@@ -115,7 +117,26 @@ public class SleepLog {
     // This could potentially be where the chart John wanted could go. Otherwise, John go wild on how you want to
     //display the info. Has to include the sCycle, cCycle, and rateOfSleep method plus the numHours has the hours
     //they slept written as 7.4 or 4.8 so if you want to change it to h hours and m minutes you can.
-    public String toString(String nickname){
-        return "";
+
+     public String toString(){
+        String result = (" _________________________________________________\n" +
+                        "| You slept " + sCycles() + " Cyles in " + numDays + " days"+ "\t\t\t\t\t  |"+
+                        "\n| Your Circadian rhythm was "+ cCycle()+"\t\t\t\t  |");
+        for(int i = 0; i<numHours.length; i++) {
+            if(numHours[i]>=10) {
+                result += "\n| Slept " + numHours[i] + " night " + (i + 1)
+                        + String.format("%31s", "|");
+            }else{
+                result += "\n| Slept " + numHours[i] + " night " + (i + 1)
+                        + String.format("%32.5s", "|");
+            }
+        }
+        result +=  "\n|_________________________________________________|";
+        return result;
+
+
     }
+    
+    
+
 }
