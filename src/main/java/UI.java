@@ -44,10 +44,11 @@ public class UI {
 //        System.out.printf("%" + (name.length()), "\t\t Welcome, " + name);
 //    }
 
-    public static char getPageOption(int pageNum, SleepLog log){
+    public static char getPageOption(int pageNum, int size, SleepLog log){
         Scanner s = new Scanner(System.in);
 
-        System.out.printf("%34s", "[<]  Page " + pageNum + "  [>]\n");
+        System.out.printf("%34s", "[" + (pageNum > 1 ? "<" : " ") + "]  Page "
+                + pageNum + "  [" + (pageNum < size/3 + size%3 ? ">" : " ") + "]\n");
         System.out.printf("%15s %31s", "[R]efresh","[M]ake post\n");
         System.out.printf("%34s", "[V]iew sleep log\n");
         System.out.println();
@@ -57,17 +58,27 @@ public class UI {
 
     }
 
-//    public static Post makePost(String name){
-//        Scanner s = new Scanner(System.in);
-//
-//        System.out.print("Write post: ");
-//        String body = s.nextLine();
-//
-//        System.out.print("Attatch a Sleep Log? [y/n]");
-//        if(s.next().toUpperCase().charAt(0) == 'Y')
-//
-//
-//    }
+    public static Post makePost(String name){
+        Scanner s = new Scanner(System.in);
+        SleepLog log = null;
+
+        for(int i = 0; i < 70; i++) System.out.println();
+        System.out.println(" \\_______________________________________________/");
+        System.out.print("\n  Write post: ");
+        String body = s.nextLine();
+
+        System.out.print("\n  Attach a Sleep Log? [y/n] ");
+        if(s.next().toUpperCase().charAt(0) == 'Y') log = new SleepLog();
+
+        System.out.print("\n  Uploading post...  ");
+        return new Post(name, body, log);
+
+    }
+
+    public static void finishPostNotif(){
+        System.out.println("post uploaded.\n\n \\_______________________________________________/");
+
+    }
 
 
 }
