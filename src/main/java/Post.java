@@ -1,3 +1,9 @@
+/**
+ * Post
+ * This class creates the object of Post. It connects to the online firebase. The post
+ * contains a user's name and when they posted it in connection to current time.
+ */
+
 import org.joda.time.Minutes;
 
 import java.time.LocalDateTime;
@@ -11,11 +17,18 @@ public class Post {
     private String name, body, timestamp;
     private SleepLog log;
 
-
+    /**
+     * Post
+     * The constructor accepts the users name and post body and initializes the variables.
+     */
     public Post(String name, String body){
         this(name, body, null);
     }
 
+    /**
+     * Post
+     * This constructor accepts a the users name, post body, and a SleepLong object.
+     */
     public Post(String name, String body, SleepLog log){
         this(System.currentTimeMillis() / 1000L, name, body, log,
                 DateTimeFormatter.ofPattern("MMM dd DD yyyy h:mm a ").format(LocalDateTime.now()) + LocalDateTime.now().getHour()*60+LocalDateTime.now().getMinute());
@@ -29,22 +42,44 @@ public class Post {
         this.timestamp = timestamp;
     }
 
+    /**
+     * getName
+     * This method is to be able to return the user's name.
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     *getBody
+     * This method is to be able to return the post's message.
+     */
     public String getBody() {
         return body;
     }
 
+    /**
+     *getTimestamp
+     * This method is to be able to see when the post was made.
+     */
     public String getTimestamp() {
         return timestamp;
     }
 
+    /**
+     * getLog
+     * This method is to be able to see the SleepLog and accesses the SleepLog class.
+     */
     public SleepLog getLog(){
         return log;
     }
 
+    /**
+     *daysAgo
+     * This method allows the time stamp to work in accordance to current time. Using a
+     * package called Joda Time. It is able to calculate if it was made today, yesterday, or
+     * any day of the week before yesterday.
+     */
     private String daysAgo(String currentDay, int daysAgo){
         if(daysAgo == 0) return "Today";
         if(daysAgo == 1) return "Yesterday";
@@ -64,6 +99,11 @@ public class Post {
         return days[dayNum];
     }
 
+    /**
+     * trimBody
+     * This method formats the post to a general box of 49 character in length. The
+     * strings are made into shorter strings.
+     */
     private ArrayList<String> trimBody(){
         if(body.length() < 43) return new ArrayList(Arrays.asList(body));
 
@@ -100,6 +140,12 @@ public class Post {
 
     }
 
+    /**
+     * toString
+     * This method allows the post to be made visible in a formatted way. Using the previosuly
+     * formatted strings it is able to fit inside a set space with the user's name at the top
+     * and the time stamp in the corner. The width is set however, the height of the post is not set.
+     */
     public String toString(){
         LocalDateTime now = LocalDateTime.now();
         String[] currTimestamp = (DateTimeFormatter.ofPattern("MMM dd DD yyyy h:mm a ").format(now) +
@@ -135,14 +181,15 @@ public class Post {
         }
 
         ArrayList<String> trimmedBody = trimBody();
-
+        /**
+         * This allows the post to be surrounded by lines and separates each post from one another.
+         */
         //TODO: fiddle with format numbers a bit for different lengths.
         //TODO: make sure to set a nickname limit.
         String result = " _________________________________________________\n" + String.format("%-1s %49s", "|", "|")
                 + "\n|  " + String.format("%-15s %32s", name, tempTimestamp + "  |")
                 + "\n" + String.format("%-1s %49s", "|", "|");
         for(String line : trimmedBody) result += String.format("%-50s %1s", "\n|   " + line, "|");
-        if(log == null) result += "\n" + String.format("%-1s %49s", "|", "|") + String.format("%-50s %1s", "\n|   " + "> Sleeplog attatched.", "|");
         result +=  "\n|_________________________________________________|";
 
 
