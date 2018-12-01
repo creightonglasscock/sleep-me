@@ -1,3 +1,10 @@
+/**
+ * SleepLog
+ * This class allows the user to create a sleep log that contains a user's hours of sleep,
+ * the number of sleep cycles they went through, how good of a circadian rhythm they had,
+ * and also how their rate of sleep was according to the sleep cycles.
+ */
+
 import java.util.*;
 import java.text.*;
 public class SleepLog {
@@ -5,11 +12,25 @@ public class SleepLog {
     private double[] numHours;
     private int[][] hours;
 
-    //This doesn't have to be like this but it was an idea I was having, anyone can make changes.
-    //Maybe make it so that the user must input a number between 0 and 2400.
-    public SleepLog(int numDays){
+    /**
+     * SleepLog
+     * This constructor allows the user to input the number of days they'd like to record,
+     * and stores them in an array. It also links to the getNumHours method so that the number
+     * of hours they slept is also stored in an array. It also does data validation for all input.
+     */
+    public SleepLog(){
         Scanner s = new Scanner(System.in);
-        this.numDays = numDays;
+        boolean numberD = false;
+        while(!numberD) {
+            try {
+                System.out.print("How many nights would you like to enter? ");
+                numDays = Integer.parseInt(s.nextLine());
+                numberD = true;
+
+            }catch(NumberFormatException e){
+                System.out.println("Enter in an integer.");
+            }
+        }
         hours = new int[numDays][2];
         System.out.println("Enter in standard military time. Ex: 1735");
         for(int k = 0; k<numDays; k++){
@@ -39,10 +60,14 @@ public class SleepLog {
         }
         numHours = getNumHours();
     }
-    //number of hours slept each night put into an array.
+
+    /**
+     * getNumHours
+     * This method calculates how many hours a user slept each night. It is then returned
+     * to the constructor to initialize the numHours array.
+     */
     private double[] getNumHours() {
         numHours = new double[numDays];
-        DecimalFormat df = new DecimalFormat("##.##");
         for(int k =0; k<numDays; k++){
             double sum = 0;
             int shour = (hours[k][0])/100;
@@ -62,7 +87,11 @@ public class SleepLog {
         }
         return numHours;
     }
-    //number of sleep cycles went through in total.
+
+    /**
+     * sCycles
+     * This method calculates how many sleep cycles were achieved in total for all nights.
+     */
     private int sCycles(){
         int sleepC = 0;
         for (int k =0; k<numDays; k++){
@@ -71,7 +100,12 @@ public class SleepLog {
         return sleepC;
     }
 
-    //how good their circadian rhythms were.
+    /**
+     * cCycle
+     * This method checks how close each sleep time and wake time were on every night.
+     * By calculating this, it checks to see if there is any kind of rhythm. The rhythm is
+     * then averaged out and shown as a percentage.
+     */
     private String cCycle(){
         int[] difference = {0,0};
 
@@ -82,25 +116,25 @@ public class SleepLog {
                 if(hour1>12 && hour2>12 || hour1<12 && hour2<12){
                     difference[i] += Math.abs(hour1-hour2);
                 }else if(hour1>12){
-                    difference[i] += (24-hour1) + hour2;
+                    difference[i] += Math.abs(24-hour1) + hour2;
                 }else{
-                    difference[i] += (24-hour2) + hour1;
+                    difference[i] += Math.abs(24-hour2) + hour1;
                 }
             }
         }
-        int recommended = numDays*2;
-        double cperc = ((difference[0]/recommended) + (difference[1]/recommended))/2.0;
-        if(cperc<=25){
-            return cperc +"%";
-        }else if (cperc<=50){
-            return cperc+"%";
-        }else if (cperc<=75){
-            return cperc +"%";
-        }else{
-            return cperc +"%";
-        }
+        DecimalFormat df = new DecimalFormat("0#.0");
+        double recommended = numDays*2.0;
+        double cperc =Math.abs(100- (((difference[0]/recommended) + (difference[1]/recommended))/2.0)*100);
+        df.format(cperc);
+        return cperc +"%";
+
     }
-    // will rate the sleep from that week, use statistics to rate the sleep as good or bad.
+
+    /**
+     * rateOfSleep
+     * This method uses the sCycles to check if enough sleep cycles were made. Then rates
+     * the sleep as too little, enough, or not enough.
+     */
     private String rateOfSleep(){
         int recommended = numDays*5;
         if(sCycles()<recommended){
@@ -112,10 +146,25 @@ public class SleepLog {
         }
 
     }
-    // This could potentially be where the chart John wanted could go. Otherwise, John go wild on how you want to
-    //display the info. Has to include the sCycle, cCycle, and rateOfSleep method plus the numHours has the hours
-    //they slept written as 7.4 or 4.8 so if you want to change it to h hours and m minutes you can.
+    /**
+     *toString
+     *This method shows sleep cycles and circadian rhythm. It is formatted so that it is in similar
+     *style to the Post object.
+     */
     public String toString(String nickname){
-        return "";
+        String result = (" _________________________________________________\n" +
+                "| You slept for " + sCycles() + " sleep cycles in " + numDays + " days"+ "\t\t\t\t\t  |"+
+                "\n| Your Circadian rhythm was "+ cCycle()+"\t\t\t\t  |");
+        for(int i = 0; i<numHours.length; i++) {
+            if(numHours[i]>=10) {
+                result += "\n| Slept " + numHours[i] + " night " + (i + 1)
+                        + String.format("%31s", "|");
+            }else{
+                result += "\n| Slept " + numHours[i] + " night " + (i + 1)
+                        + String.format("%32.5s", "|");
+            }
+        }
+        result +=  "\n|_________________________________________________|";
+        return result;
     }
 }
