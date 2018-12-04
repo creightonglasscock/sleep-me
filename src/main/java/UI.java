@@ -50,7 +50,7 @@ public class UI {
         System.out.printf("%34s", "[" + (pageNum > 1 ? "<" : " ") + "]  Page "
                 + pageNum + "  [" + (pageNum < size/3 + size%3 ? ">" : " ") + "]\n");
         System.out.printf("%15s %31s", "[R]efresh","[M]ake post\n");
-        System.out.printf("%34s", "[V]iew sleep log\n");
+//        System.out.printf("%34s", "[V]iew sleep log\n");
         System.out.println();
         System.out.printf("%25s", " ");
 
@@ -67,8 +67,9 @@ public class UI {
         System.out.print("\n  Write post: ");
         String body = s.nextLine();
 
-        System.out.print("\n  Attach a Sleep Log? [y/n] ");
-        if(s.next().toUpperCase().charAt(0) == 'Y') log = new SleepLog();
+        System.out.print("\n  Create a Sleep Log? [y/n] ");
+        if(s.next().toUpperCase().charAt(0) == 'Y'){ log = new SleepLog("log");
+        System.out.println(log.toString(name));}
 
         System.out.print("\n  Uploading post...  ");
         return new Post(name, body, log);

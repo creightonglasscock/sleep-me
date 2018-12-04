@@ -1,24 +1,34 @@
-import org.joda.time.Minutes;
-
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+
+
+/**
+ * Post
+ * This class creates the object of Post. It connects to the online firebase. The post
+ * contains a user's name and when they posted it in connection to current time.
+ */
 
 public class Post {
 
     protected long epoch;
     private String name, body, timestamp;
     private SleepLog log;
+    private char logLetter;
 
-
+    /**
+     * Post
+     * The constructor accepts the users name and post body and initializes the variables.
+     */
     public Post(String name, String body){
         this(name, body, null);
     }
 
     public Post(String name, String body, SleepLog log){
         this(System.currentTimeMillis() / 1000L, name, body, log,
-                DateTimeFormatter.ofPattern("MMM dd DD yyyy h:mm a ").format(LocalDateTime.now()) + LocalDateTime.now().getHour()*60+LocalDateTime.now().getMinute());
+                DateTimeFormatter.ofPattern("MMM dd DD yyyy h:mm a ").format(LocalDateTime.now()) +
+                        (LocalDateTime.now().getMinute() + LocalDateTime.now().getHour()*60));
     }
 
     public Post(long epoch, String name, String body, SleepLog log, String timestamp){
@@ -43,6 +53,10 @@ public class Post {
 
     public SleepLog getLog(){
         return log;
+    }
+
+    public void setLogLetter(char letter){
+        logLetter = letter;
     }
 
     private String daysAgo(String currentDay, int daysAgo){
@@ -103,13 +117,14 @@ public class Post {
     public String toString(){
         LocalDateTime now = LocalDateTime.now();
         String[] currTimestamp = (DateTimeFormatter.ofPattern("MMM dd DD yyyy h:mm a ").format(now) +
-                LocalDateTime.now().getHour()*60+LocalDateTime.now().getMinute()).split(" ");
+                (now.getMinute() + now.getHour()*60)).split(" ");
         String currDate = currTimestamp[0] + " " + currTimestamp[1];
         String currDay = currTimestamp[2];
         String currYear = currTimestamp[3];
         String currTime = currTimestamp[4] + " " + currTimestamp[5];
         String currMin = currTimestamp[6];
         String currDayOfWeek = now.getDayOfWeek().toString();
+
 
         String[] postTimestamp = timestamp.split(" ");
         String postDate = postTimestamp[0] + " " + postTimestamp[1];
@@ -142,7 +157,7 @@ public class Post {
                 + "\n|  " + String.format("%-15s %32s", name, tempTimestamp + "  |")
                 + "\n" + String.format("%-1s %49s", "|", "|");
         for(String line : trimmedBody) result += String.format("%-50s %1s", "\n|   " + line, "|");
-        if(log == null) result += "\n" + String.format("%-1s %49s", "|", "|") + String.format("%-50s %1s", "\n|   " + "> Sleeplog attatched.", "|");
+        if(log != null) result += "\n" + String.format("%-1s %49s", "|", "|") + String.format("%-50s %1s", "\n|   " + "> Sleeplog attatched. Press [" + logLetter + "] to view.", "|");
         result +=  "\n|_________________________________________________|";
 
 

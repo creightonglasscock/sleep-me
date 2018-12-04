@@ -7,6 +7,7 @@ import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import com.google.firebase.database.*;
+import com.google.gson.Gson;
 
 public class Firebase {
     private FirebaseDatabase database;
@@ -73,21 +74,17 @@ public class Firebase {
     public static int count;
     public static ArrayList<Post> posts;
     public ArrayList<Post> readPosts(){
-        //TODO BIG: CLEANSE INPUT
-        //TODO: make less bad
+        Gson gson = new Gson();
 
         posts = new ArrayList();
         count = 99;
-        ref.addValueEventListener(new ValueEventListener() {
+        ref.child("posts").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 count = (int)snapshot.getChildrenCount();
-                //System.out.print("Count: " + count);
 
                 for (DataSnapshot child : snapshot.getChildren()) {
-                    String[] params = child.getValue(Object.class).toString().split("=|\\,|\\}");
-                    posts.add(new Post(Long.parseLong(child.getKey()), params[1], params[3], null, params[5])); // This part's sketchy
-                    //System.out.println(child.getKey());
+                    posts.add(gson.fromJson(gson.toJson(child.getValue()), Post.class));
                 }
             }
 
@@ -109,7 +106,7 @@ public class Firebase {
 
     public void write(Post post){
         counter = new CountDownLatch(1);
-        ref.child(Long.toString(post.epoch)).setValue(post, writeListener);
+        ref.child("posts").child(Long.toString(post.epoch)).setValue(post, writeListener);
         try {
             counter.await();
         }
@@ -117,6 +114,7 @@ public class Firebase {
             System.out.print("Connection to database interrupted. Data not saved.");
         }
     }
+
 
     public void write(String path, Post post){
         counter = new CountDownLatch(1);
