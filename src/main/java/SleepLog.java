@@ -37,7 +37,7 @@ public class SleepLog {
 
     public SleepLog(String tag){
         Scanner s = new Scanner(System.in);
-        System.out.println(numDays);
+        
         boolean numberD = false;
         while(!numberD) {
             try {
@@ -49,6 +49,7 @@ public class SleepLog {
                 System.out.println("Enter in an integer.");
             }
         }
+		
         hours = new Integer[numDays][2];
         System.out.println("Enter in standard military time. Ex: 5:35 PM = 1735.");
         for(int k = 0; k<numDays; k++){
@@ -70,6 +71,9 @@ public class SleepLog {
                 try {
                     System.out.print("On night " + (k+1) + " I woke up at: ");
                     hours[k][1] = Integer.parseInt(s.nextLine());
+					if(hours[k][0]<0 || hours[k][0]>2400){
+                        throw new NumberFormatException();
+                    }
                     wake = true;
                 }catch(NumberFormatException e){
                     System.out.println("Error: Enter proper military time.");
@@ -89,7 +93,6 @@ public class SleepLog {
     private String calcNumHours() {
         String stringHours = "";
         for(int k =0; k<numDays; k++){
-            System.out.println("HERE");
             double sum = 0;
             int shour = (hours[k][0])/100;
             int sminute = (hours[k][0])%100;
@@ -103,7 +106,7 @@ public class SleepLog {
             if(sminute>wminute){
                 sum += ((60-sminute) + wminute)/60.0;
             }
-            System.out.println(sum);
+            
             stringHours += "" + sum + "-";
         }
         return stringHours;
@@ -134,23 +137,27 @@ public class SleepLog {
      */
     private String cCycle(){
         int[] difference = {0,0};
-
-        for (int k = 0; k<numDays-1; k++){
-            for(int i = 0; i<2; i++) {
-                int hour1 = (hours[k][i]) / 100;
-                int hour2 = (hours[k + 1][i]) / 100;
-                if(hour1>12 && hour2>12 || hour1<12 && hour2<12){
-                    difference[i] += Math.abs(hour1-hour2);
-                }else if(hour1>12){
-                    difference[i] += Math.abs(24-hour1) + hour2;
-                }else{
-                    difference[i] += Math.abs(24-hour2) + hour1;
-                }
-            }
+		double cperc;
+        for (int k = 0; k<numDays; k++){
+			for(int a =0; a<numDays; a++){
+				for(int i = 0; i<2; i++) {
+					int hour1 = (hours[k][i]) / 100;
+					int hour2 = (hours[a][i]) / 100;
+					if(hour1>12 && hour2>12 || hour1<12 && hour2<12){
+						difference[i] += Math.abs(hour1-hour2);
+						
+					}else if(hour1>12){
+						difference[i] += Math.abs(24-hour1) + hour2;
+					}else{
+						difference[i] += Math.abs(24-hour2) + hour1;
+					}
+				}
+			}
         }
         DecimalFormat df = new DecimalFormat("##.#");
-        double recommended = numDays*2.0;
-        double cperc =Math.abs(100- (((difference[0]/recommended) + (difference[1]/recommended))/2.0)*100);
+        double recommended = numDays*2.0*numDays;
+        cperc =Math.abs(100- (((difference[0]/recommended) + (difference[1]/recommended))/2.0)*100);
+
         df.format(cperc);
         return cperc +"%";
 
