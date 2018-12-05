@@ -7,6 +7,7 @@
  *
  */
 
+import java.text.DecimalFormat;
 import java.util.*;
 public class SleepLog {
     private int numDays;
@@ -36,11 +37,10 @@ public class SleepLog {
 
     public SleepLog(String tag){
         Scanner s = new Scanner(System.in);
-        System.out.println(numDays);
         boolean numberD = false;
         while(!numberD) {
             try {
-                System.out.print("   > How many nights would you like to enter? ");
+                System.out.print("\n   > How many nights would you like to enter? ");
                 numDays = Integer.parseInt(s.nextLine());
                 numberD = true;
 
@@ -155,16 +155,18 @@ public class SleepLog {
         if(hours == null) fromStringHoursArr();
         int[] difference = {0,0};
 
-        for (int k = 0; k<numDays-1; k++){
-            for(int i = 0; i<2; i++) {
-                int hour1 = (hours[k][i]) / 100;
-                int hour2 = (hours[k][i]) / 100;
-                if(hour1>12 && hour2>12 || hour1<12 && hour2<12){
-                    difference[i] += Math.abs(hour1-hour2);
-                }else if(hour1>12){
-                    difference[i] += (24-hour1) + hour2;
-                }else{
-                    difference[i] += (24-hour2) + hour1;
+        for (int k = 0; k<numDays; k++){
+            for(int a = 0; a<numDays; a++) {
+                for (int i = 0; i < 2; i++) {
+                    int hour1 = (hours[k][i]) / 100;
+                    int hour2 = (hours[k][i]) / 100;
+                    if (hour1 > 12 && hour2 > 12 || hour1 < 12 && hour2 < 12) {
+                        difference[i] += Math.abs(hour1 - hour2);
+                    } else if (hour1 > 12) {
+                        difference[i] += (24 - hour1) + hour2;
+                    } else {
+                        difference[i] += (24 - hour2) + hour1;
+                    }
                 }
             }
         }
@@ -181,21 +183,13 @@ public class SleepLog {
         }
     }
 
-    /**
-     * rateOfSleep
-     * This method uses the sCycles to check if enough sleep cycles were made. Then rates
-     * the sleep as too little, enough, or not enough.
-     */
-    private String rateOfSleep(){
-        int recommended = numDays*5;
-        if(sCycles()<recommended){
-            return "Not enough sleep cycles. Try sleeping a bit more.";
-        }else if (sCycles() == recommended){
-            return "Perfect amount of sleep cycles!";
-        }else{
-            return "More sleep cycles than recommended. Try sleeping a bit less.";
-        }
 
+    private String toHoursMin(double d){
+        String s = "";
+        s += (int)d + "h ";
+        s += (int)((d - (int)d)*60) + "m";
+
+        return s;
     }
     /**
      *toString
@@ -203,19 +197,24 @@ public class SleepLog {
      *style to the Post object.
      */
     public String toString(String nickname){
-        String result = (" _________________________________________________\n" +
-                "| You slept for " + sCycles() + " sleep cycles in " + numDays + " days"+ "\t\t\t\t\t  |"+
-                "\n| Circadian rhythm synchronization  "+ cCycle()+"\t\t\t\t  |");
-        for(int i = 0; i<numHours.length; i++) {
-            if(numHours[i]>=10) {
-                result += "\n| Slept " + numHours[i] + " hours on night " + (i + 1)
-                        + String.format("%31s", "|");
-            }else{
-                result += "\n| Slept " + numHours[i] + " night " + (i + 1)
-                        + String.format("%32.5s", "|");
-            }
-        }
+        DecimalFormat df = new DecimalFormat("##.#");
+        sCycles();
+        double totalHours = 0;
+        for(int i = 0; i < numHours.length; i++) totalHours += numHours[i];
+        totalHours /= numDays;
+
+        String result = " _________________________________________________\n" + String.format("%-1s %49s", "|", "|") + "\n" +
+                String.format("%-30s %21s", "| " + nickname + "'s Sleep.log", "  |\n") + String.format("%-1s %49s", "|", "|") + "\n" +
+                String.format("%-40s %10s", "| Average sleep per night: " + toHoursMin(totalHours), "|") + "\n" +
+                String.format("%-40s %10s", "| Average sleep cycles per night: " + df.format(sCycles()/(double)numDays), "|") + "\n" + String.format("%-1s %49s", "|", "|");
+        for(int i = 0; i<numHours.length; i++)
+                result += "\n" + String.format("%-30s %20s", "| Night " + (i + 1) + ": " + toHoursMin(numHours[i]) + " slept", "|");
+
+
         result +=  "\n|_________________________________________________|";
         return result;
     }
+
+    // + "\n" +
+    //                String.format("%-40s %10s", "| Circadian rhythm stability: "+ cCycle(), "|") + "\n" + String.format("%-1s %49s", "|", "|")
 }

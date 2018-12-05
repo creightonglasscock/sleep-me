@@ -15,7 +15,7 @@ public class Post {
     protected long epoch;
     private String name, body, timestamp;
     private SleepLog log;
-    private char logLetter;
+    private char logLetter = ' ';
 
     /**
      * Post
@@ -151,13 +151,11 @@ public class Post {
 
         ArrayList<String> trimmedBody = trimBody();
 
-        //TODO: fiddle with format numbers a bit for different lengths.
-        //TODO: make sure to set a nickname limit.
         String result = " _________________________________________________\n" + String.format("%-1s %49s", "|", "|")
                 + "\n|  " + String.format("%-15s %32s", name, tempTimestamp + "  |")
                 + "\n" + String.format("%-1s %49s", "|", "|");
         for(String line : trimmedBody) result += String.format("%-50s %1s", "\n|   " + line, "|");
-        if(log != null) result += "\n" + String.format("%-1s %49s", "|", "|") + String.format("%-50s %1s", "\n|   " + "> Sleeplog attatched. Press [" + logLetter + "] to view.", "|");
+        if(log != null) result += "\n" + String.format("%-1s %49s", "|", "|") + String.format("%-50s %1s", "\n|   " + "> Sleep.log attached." + (logLetter == ' ' ? "" : " Press [" + logLetter + "] to view."), "|");
         result +=  "\n|_________________________________________________|";
 
 

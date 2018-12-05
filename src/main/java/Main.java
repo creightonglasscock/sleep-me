@@ -1,10 +1,11 @@
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.concurrent.TimeUnit;
 
 public class Main {
 //TODO: FIX TOO MANY POSTS RENDERING ISSUE
-//TODO: FIX SLEEPLOG CIRCADIAN RHYTHM 100% / NULL POINTER
-//TODO: FIX SLEEPLOG FORMATTING / MAKE POST FORMATTING
+//TODO: FIX PAGE NAV FLUB
+//TODO: FIX SLEEPLOG CIRCADIAN RHYTHM 100%
     public static void main(String[] args){
         final String DATABASE_NAME = "sleep-me";
         final String ACCT_PATH = "sleep-me.json";
@@ -22,7 +23,7 @@ public class Main {
         int size = 0;
         int page = 1;
 
-
+        boolean on = true;
 
 
         //db.write(new Post("Abe Lincoln", "Four score and seven years ago our fathers brought forth on this continent a new nation.")); //43 chars line?
@@ -37,18 +38,18 @@ public class Main {
 //        opts.put('P', "Make post");
 //        UI.getOption(opts);
 
-        while(true){
-
-            UI.printLogo();
+        while(on){
+            UI.newPage();
+            UI.printLogo(name);
             posts = db.readPosts();
             size = posts.size();
             Collections.reverse(posts);
-            ArrayList<SleepLog> logs = new ArrayList<>();
+            ArrayList<Post> logPosts = new ArrayList<>();
             try {
                 for (int i = 3*(page-1); i < 3*(page-1) + 3; i++) {
                     if(posts.get(i).getLog() != null){
-                        posts.get(i).setLogLetter((char)('A' + logs.size()));
-                        logs.add(posts.get(i).getLog());
+                        posts.get(i).setLogLetter((char)('A' + logPosts.size()));
+                        logPosts.add(posts.get(i));
                     }
                     System.out.println(posts.get(i) + "\n");
 
@@ -60,10 +61,21 @@ public class Main {
             if(ans == '<' && page > 1) page --;
             if(ans == '>' && page < size/3 + size%3) page ++;
             if(ans == 'R') page = 1;
-            if(ans == 'A' && logs.size() > 0) System.out.println(logs.get(0).toString(name));
-            if(ans == 'B' && logs.size() > 0) System.out.println(logs.get(1).toString(name));
-            if(ans == 'C' && logs.size() > 0) System.out.println(logs.get(2).toString(name));
+            if(ans == 'A' && logPosts.size() > 0) {UI.newPage(); UI.printLogo(); System.out.println(logPosts.get(0).getLog().toString(logPosts.get(0).getName())); UI.getConfirm();}
+            if(ans == 'B' && logPosts.size() > 0) {UI.newPage(); UI.printLogo(); System.out.println(logPosts.get(1).getLog().toString(logPosts.get(1).getName())); UI.getConfirm();}
+            if(ans == 'C' && logPosts.size() > 0) {UI.newPage(); UI.printLogo(); System.out.println(logPosts.get(2).getLog().toString(logPosts.get(2).getName())); UI.getConfirm();}
+            if(ans == 'E') {
+                UI.newPage();
+                UI.printLogo();
+                System.out.println("\n\t\t\tThank you for using Sleep.me!");
+                try {
+                    TimeUnit.SECONDS.sleep(2);
+                }catch (Exception e) {}
+
+                on = false;
+            }
         }
+
 
 
     }

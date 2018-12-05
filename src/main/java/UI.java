@@ -1,3 +1,5 @@
+
+
 import java.util.HashMap;
 import java.util.Scanner;
 
@@ -14,7 +16,13 @@ public class UI {
                         "  |_____/|_|\\___|\\___| .__/  (_) |_| |_| |_|\\___|\n" +
                         "                     | |                         \n" +
                         "                     |_|                         ");
-        //System.out.println("A Glasscock-Chapple-Herrera-Christensen enterprise");
+    }
+
+    public static void printLogo(String name){
+        printLogo();
+        System.out.println();
+        for(int i = 0; i < 21 - name.length()/2; i ++) System.out.print(" ");
+        System.out.println("Welcome, " + name);
     }
 
     public static char getOption(HashMap<Character, String> opts){
@@ -31,13 +39,17 @@ public class UI {
         Scanner s = new Scanner(System.in);
         String name;
         do {
-            System.out.print("Enter name: ");
+            System.out.print("\nEnter name: ");
             name = s.nextLine();
             if (name.length() > 15) System.out.println("(Must be shorter than 15 characters.)");
         }while(name.length() > 15);
-        for(int i = 0; i < 70; i++) System.out.println();
+        newPage();
         return name;
 
+    }
+
+    public static void newPage(){
+        for(int i = 0; i < 45; i++) System.out.println();
     }
 
 //    public static void printName(String name){
@@ -50,7 +62,7 @@ public class UI {
         System.out.printf("%34s", "[" + (pageNum > 1 ? "<" : " ") + "]  Page "
                 + pageNum + "  [" + (pageNum < size/3 + size%3 ? ">" : " ") + "]\n");
         System.out.printf("%15s %31s", "[R]efresh","[M]ake post\n");
-//        System.out.printf("%34s", "[V]iew sleep log\n");
+        System.out.printf("%29s", "[E]xit\n");
         System.out.println();
         System.out.printf("%25s", " ");
 
@@ -58,19 +70,27 @@ public class UI {
 
     }
 
+    public static void getConfirm(){
+        System.out.println();
+        System.out.printf("%34s", "[R]eturn to posts");
+        System.out.println("\n");
+        System.out.printf("%25s", " ");
+        (new Scanner(System.in)).next();
+    }
+
     public static Post makePost(String name){
         Scanner s = new Scanner(System.in);
         SleepLog log = null;
 
-        for(int i = 0; i < 70; i++) System.out.println();
-        UI.printLogo();
+        newPage();
+        printLogo();
         System.out.print("\n  Write post: \n\n  ");
         String body = s.nextLine();
 
-        System.out.print("\n  Create sleep log? [y/n] ");
+        System.out.print("\n  Attach Sleep.log? [y/n] ");
         if(s.next().toUpperCase().charAt(0) == 'Y'){
             log = new SleepLog("log");
-            System.out.println("\n  Sleep log completed. Preview sleep log? [y/n] ");
+            System.out.print("\n  Sleep.log completed. Preview Sleep.log? [y/n] ");
             if(s.next().toUpperCase().charAt(0) == 'Y') System.out.println(log.toString(name));
         }
         Post p = new Post(name, body, log);
