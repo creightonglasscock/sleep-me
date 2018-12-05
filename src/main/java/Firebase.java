@@ -49,7 +49,6 @@ public class Firebase {
     }
 
     public void child(String path){
-        //TODO: check for recursion
         ref = ref.child(path);
     }
 

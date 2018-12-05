@@ -5,20 +5,15 @@
  * and also how their rate of sleep was according to the sleep cycles.
  *
  *
- * SLEEPLOGS can currently be created, but cannot be serialized (uploaded) to Firebase.
- * This is a known bug and seems to be a limitation with compatibility between the
- * datatypes in use in the sleeplog class.
  */
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.text.*;
 public class SleepLog {
     private int numDays;
     private double[] numHours = null;
     private String stringHours;
-    private Integer[][] hours;
+    private String stringHoursArr;
+    private Integer[][] hours = null;
 
     /**
      * SleepLog
@@ -34,6 +29,10 @@ public class SleepLog {
         return stringHours;
     }
 
+    public String getStringHoursArr(){
+        return stringHoursArr;
+    }
+
 
     public SleepLog(String tag){
         Scanner s = new Scanner(System.in);
@@ -41,43 +40,43 @@ public class SleepLog {
         boolean numberD = false;
         while(!numberD) {
             try {
-                System.out.print("How many nights would you like to enter? ");
+                System.out.print("   > How many nights would you like to enter? ");
                 numDays = Integer.parseInt(s.nextLine());
                 numberD = true;
 
             }catch(NumberFormatException e){
-                System.out.println("Enter in an integer.");
+                System.out.println("    > zEnter in an integer.");
             }
         }
         hours = new Integer[numDays][2];
-        System.out.println("Enter in standard military time. Ex: 5:35 PM = 1735.");
+        System.out.println("\n   > Enter in standard military time. Ex: 5:35 PM = 1735.");
         for(int k = 0; k<numDays; k++){
             boolean sleep = false;
             boolean wake = false;
             while(!sleep) {
                 try {
-                    System.out.print("On night " + (k+1) + " I fell asleep at: ");
+                    System.out.print("   > Night " + (k+1) + " bedtime: ");
                     hours[k][0] = Integer.parseInt(s.nextLine());
                     if(hours[k][0]<0 || hours[k][0]>2400){
                         throw new NumberFormatException();
                     }
                     sleep = true;
                 }catch(NumberFormatException e){
-                    System.out.println("Error: Enter proper military time(0000-2400).");
+                    System.out.println("    > Error: Enter proper military time (0000-2400).");
                 }
             }
             while(!wake) {
                 try {
-                    System.out.print("On night " + (k+1) + " I woke up at: ");
+                    System.out.print("   > Night " + (k+1) + " wake time: ");
                     hours[k][1] = Integer.parseInt(s.nextLine());
                     wake = true;
                 }catch(NumberFormatException e){
-                    System.out.println("Error: Enter proper military time.");
+                    System.out.println("Error: Enter proper military time (0000-2400).");
                 }
             }
         }
-
         stringHours = calcNumHours();
+        stringHoursArr = calcStringHoursArr();
 
     }
 
@@ -89,7 +88,6 @@ public class SleepLog {
     private String calcNumHours() {
         String stringHours = "";
         for(int k =0; k<numDays; k++){
-            System.out.println("HERE");
             double sum = 0;
             int shour = (hours[k][0])/100;
             int sminute = (hours[k][0])%100;
@@ -103,10 +101,31 @@ public class SleepLog {
             if(sminute>wminute){
                 sum += ((60-sminute) + wminute)/60.0;
             }
-            System.out.println(sum);
             stringHours += "" + sum + "-";
         }
         return stringHours;
+    }
+
+    private String calcStringHoursArr(){
+        stringHoursArr = "";
+        for(Integer[] row : hours){
+            for(Integer col : row){
+                stringHoursArr += col.toString() + "-";
+            }
+            stringHoursArr += "/";
+        }
+        return stringHoursArr;
+    }
+
+    private void fromStringHoursArr(){
+        hours = new Integer[numDays][2];
+        String[] rows = stringHoursArr.split("/");
+
+        for(int row = 0; row < hours.length; row++){
+            for(int col = 0; col < hours[0].length; col++){
+                hours[row][col] = Integer.parseInt(rows[row].split("-")[col]);
+            }
+        }
     }
 
     /**
@@ -133,27 +152,33 @@ public class SleepLog {
      * then averaged out and shown as a percentage.
      */
     private String cCycle(){
+        if(hours == null) fromStringHoursArr();
         int[] difference = {0,0};
 
         for (int k = 0; k<numDays-1; k++){
             for(int i = 0; i<2; i++) {
                 int hour1 = (hours[k][i]) / 100;
-                int hour2 = (hours[k + 1][i]) / 100;
+                int hour2 = (hours[k][i]) / 100;
                 if(hour1>12 && hour2>12 || hour1<12 && hour2<12){
                     difference[i] += Math.abs(hour1-hour2);
                 }else if(hour1>12){
-                    difference[i] += Math.abs(24-hour1) + hour2;
+                    difference[i] += (24-hour1) + hour2;
                 }else{
-                    difference[i] += Math.abs(24-hour2) + hour1;
+                    difference[i] += (24-hour2) + hour1;
                 }
             }
         }
-        DecimalFormat df = new DecimalFormat("##.#");
-        double recommended = numDays*2.0;
-        double cperc =Math.abs(100- (((difference[0]/recommended) + (difference[1]/recommended))/2.0)*100);
-        df.format(cperc);
-        return cperc +"%";
-
+        int recommended = numDays*2;
+        double cperc = ((difference[0]/recommended) + (difference[1]/recommended))/2.0;
+        if(cperc<=25){
+            return cperc +"%";
+        }else if (cperc<=50){
+            return cperc+"%";
+        }else if (cperc<=75){
+            return cperc +"%";
+        }else{
+            return cperc +"%";
+        }
     }
 
     /**

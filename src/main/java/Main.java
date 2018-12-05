@@ -1,9 +1,10 @@
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 
 public class Main {
-
+//TODO: FIX TOO MANY POSTS RENDERING ISSUE
+//TODO: FIX SLEEPLOG CIRCADIAN RHYTHM 100% / NULL POINTER
+//TODO: FIX SLEEPLOG FORMATTING / MAKE POST FORMATTING
     public static void main(String[] args){
         final String DATABASE_NAME = "sleep-me";
         final String ACCT_PATH = "sleep-me.json";

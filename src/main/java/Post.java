@@ -27,7 +27,7 @@ public class Post {
 
     public Post(String name, String body, SleepLog log){
         this(System.currentTimeMillis() / 1000L, name, body, log,
-                DateTimeFormatter.ofPattern("MMM dd DD yyyy h:mm a ").format(LocalDateTime.now()) +
+                DateTimeFormatter.ofPattern("MMM dd DDD yyyy h:mm a ").format(LocalDateTime.now()) +
                         (LocalDateTime.now().getMinute() + LocalDateTime.now().getHour()*60));
     }
 
@@ -116,7 +116,7 @@ public class Post {
 
     public String toString(){
         LocalDateTime now = LocalDateTime.now();
-        String[] currTimestamp = (DateTimeFormatter.ofPattern("MMM dd DD yyyy h:mm a ").format(now) +
+        String[] currTimestamp = (DateTimeFormatter.ofPattern("MMM dd DDD yyyy h:mm a ").format(now) +
                 (now.getMinute() + now.getHour()*60)).split(" ");
         String currDate = currTimestamp[0] + " " + currTimestamp[1];
         String currDay = currTimestamp[2];

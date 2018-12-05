@@ -31,9 +31,9 @@ public class UI {
         Scanner s = new Scanner(System.in);
         String name;
         do {
-            System.out.print("\n\t\t\t   Enter name: ");
+            System.out.print("Enter name: ");
             name = s.nextLine();
-            if (name.length() > 15) System.out.println("\t   (Must be shorter than 15 characters.)");
+            if (name.length() > 15) System.out.println("(Must be shorter than 15 characters.)");
         }while(name.length() > 15);
         for(int i = 0; i < 70; i++) System.out.println();
         return name;
@@ -63,21 +63,31 @@ public class UI {
         SleepLog log = null;
 
         for(int i = 0; i < 70; i++) System.out.println();
-        System.out.println(" \\_______________________________________________/");
-        System.out.print("\n  Write post: ");
+        UI.printLogo();
+        System.out.print("\n  Write post: \n\n  ");
         String body = s.nextLine();
 
-        System.out.print("\n  Create a Sleep Log? [y/n] ");
-        if(s.next().toUpperCase().charAt(0) == 'Y'){ log = new SleepLog("log");
-        System.out.println(log.toString(name));}
-
-        System.out.print("\n  Uploading post...  ");
-        return new Post(name, body, log);
+        System.out.print("\n  Create sleep log? [y/n] ");
+        if(s.next().toUpperCase().charAt(0) == 'Y'){
+            log = new SleepLog("log");
+            System.out.println("\n  Sleep log completed. Preview sleep log? [y/n] ");
+            if(s.next().toUpperCase().charAt(0) == 'Y') System.out.println(log.toString(name));
+        }
+        Post p = new Post(name, body, log);
+        System.out.print("\n  Post completed. Preview post? [y/n] ");
+        if(s.next().toUpperCase().charAt(0) == 'Y') System.out.println(p);
+        System.out.print("\n  Uploading post... ");
+        return p;
 
     }
 
     public static void finishPostNotif(){
-        System.out.println("post uploaded.\n\n \\_______________________________________________/");
+        Scanner s = new Scanner(System.in);
+        System.out.println("post uploaded.");
+        do {
+            System.out.print("\n  Continue? [y/n] ");
+        }while(s.next().toUpperCase().charAt(0) != 'Y');
+
 
     }
 
